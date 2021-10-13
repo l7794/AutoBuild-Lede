@@ -29,7 +29,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@master
 
-    - name: 初始化环境Initialization environment
+    - name: 初始化环境
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
@@ -57,7 +57,7 @@ jobs:
         sudo -E apt-get -y autoremove --purge
         sudo -E apt-get clean
 
-    - name: 下载Lede源Clone source code
+    - name: 下载Lede源
       env: 
         REPO_URL: https://github.com/coolsnowwolf/lede
         REPO_BRANCH: master
@@ -69,7 +69,7 @@ jobs:
         echo "src-git nas https://github.com/linkease/nas-packages.git;master" >> ./feeds.conf.default
         echo "src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main" >> ./feeds.conf.default        
 
-    - name: 升级 & 安装 feeds
+    - name: 升级 & 安装feeds
       working-directory: ./openwrt
       run: |
         ./scripts/feeds update -a
@@ -82,7 +82,7 @@ jobs:
         git clone https://github.com/esirplayground/luci-app-poweroff.git package/uci-app-poweroff
         git clone https://ghproxy.com/https://github.com/destan19/OpenAppFilter.git package/OpenAppFilter
 
-    - name: argon_new主题
+    - name: argon主题
       working-directory: ./openwrt
       run: |
         cd package/lean
@@ -100,7 +100,7 @@ jobs:
     #  run: |
     #    git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/luci-theme-argon-jerrykuku
 
-    - name: 配置自定义Configuration Customization - Build_x86_64
+    - name: 配置自定义
       env:
         CONFIG_FILE: 'x86_64.config'
       run: |
@@ -108,14 +108,14 @@ jobs:
         chmod +x ./customize.sh && ./customize.sh
         cd openwrt && make defconfig
         
-    - name: 预下载DL库Download package
+    - name: 预下载DL库
       working-directory: ./openwrt
       run: |
         make download -j$(nproc)
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
-    - name: 正式编译固件Build firmware
+    - name: 正式编译固件
       working-directory: ./openwrt
       run: |
         echo -e "$(nproc) thread build."
@@ -139,7 +139,7 @@ jobs:
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "::set-output name=status::success"
 
-    - name : 打包上传Upload artifact
+    - name : 打包上传
       uses: actions/upload-artifact@master
       with:
         name: OpenWrt
